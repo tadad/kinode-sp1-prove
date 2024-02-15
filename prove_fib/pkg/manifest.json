@@ -1,0 +1,17 @@
+[
+    {
+        "process_name": "prove_fib",
+        "process_wasm_path": "/prove_fib.wasm",
+        "on_exit": "None",
+        "request_networking": true,
+        "request_capabilities": [
+            "http_server:distro:sys",
+            "net:distro:sys",
+            "vfs:distro:sys"
+        ],
+        "grant_capabilities": [
+            "vfs:distro:sys"
+        ],
+        "public": true
+    }
+]
