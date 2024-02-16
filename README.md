@@ -4,7 +4,7 @@ Proving [SP1](https://github.com/succinctlabs/sp1)'s Fibonacci example in a Kino
 
 ## Usage
 
-[Install](https://succinctlabs.github.io/sp1/getting-started/install.html) and [Quickstart](https://succinctlabs.github.io/sp1/getting-started/quickstart.html) SP1 up to [Build Program](https://succinctlabs.github.io/sp1/getting-started/quickstart.html#build-program).
+[Install](https://succinctlabs.github.io/sp1/getting-started/install.html) and [Quickstart](https://succinctlabs.github.io/sp1/getting-started/quickstart.html) SP1 up to and including [Build Program](https://succinctlabs.github.io/sp1/getting-started/quickstart.html#build-program).
 
 To generate the proof inside of Kinode:
 
