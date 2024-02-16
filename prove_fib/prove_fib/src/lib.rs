@@ -1,8 +1,21 @@
 use sp1_core::{SP1Prover, SP1Stdin, SP1Verifier};
 
-use kinode_process_lib::{call_init, println, Address, vfs::{create_drive, open_file}};
+use hex_literal::hex;
+use kinode_process_lib::{
+    call_init, println,
+    vfs::{create_drive, open_file},
+    Address,
+};
+use serde::{Deserialize, Serialize};
 
 const ELF: &[u8] = include_bytes!("../../../program/elf/riscv32im-succinct-zkvm-elf");
+
+#[derive(Serialize, Deserialize)]
+struct Transaction {
+    pub_key: [u8; 32], // TODO use alloy
+    sig: String,       //[u8; 64],     // TODO use alloy
+    data: String,      //[u8],
+}
 
 wit_bindgen::generate!({
     path: "wit",
@@ -30,19 +43,19 @@ fn init(our: Address) {
 fn prove() -> Vec<u8> {
     // Generate proof.
     let mut stdin = SP1Stdin::new();
-    let n = 500u32;
-    stdin.write(&n);
-    let mut proof = SP1Prover::prove(ELF, stdin).expect("proving failed");
+    let tx = Transaction {
+        pub_key: hex!("ec172b93ad5e563bf4932c70e1245034c35467ef2efd4d64ebf819683467e2bf"),
+        sig: "46557EFE96D22D07E104D9D7FAB558FB02F6B13116056E6D7C300D7BB132059907D538EAC68EC7864AA2AC2E23EA7082A04002B0ACDAC2FF8CCAD7E80E64DD00".to_string(),
+        data: "616263616263616263616263616263616263616263616263616263616263616263616263616263".to_string(),
+    };
 
-    // Read output.
-    let a = proof.stdout.read::<u32>();
-    let b = proof.stdout.read::<u32>();
-    println!("a: {}", a);
-    println!("b: {}", b);
+    stdin.write(&tx);
+    let mut proof = SP1Prover::prove(ELF, stdin).expect("proving failed");
 
     // Verify proof.
     SP1Verifier::verify(ELF, &proof).expect("verification failed");
 
     // Return proof.
+    println!("prover: verified proof");
     serde_json::to_vec(&proof).unwrap()
 }
