@@ -1,8 +1,12 @@
 use sp1_core::{SP1Prover, SP1Stdin, SP1Verifier};
+use std::io::{Read, Seek, SeekFrom, Write};
+use std::path::Path;
+
+use tempfile::tempfile_in;
 
 use hex_literal::hex;
 use kinode_process_lib::{
-    call_init, println,
+    await_message, call_init, println,
     vfs::{create_drive, open_file},
     Address,
 };
@@ -28,7 +32,28 @@ wit_bindgen::generate!({
 call_init!(init);
 
 fn init(our: Address) {
-    println!("prove_fib: begin");
+    println!("prove_fib: begin3");
+
+    let temp_dir = std::env::var("TEMP_DIR").unwrap();
+    let mut temp_file = tempfile_in(temp_dir).unwrap();
+
+    // Write some text to the temporary file.
+    let written_text = "Hello, world!";
+    write!(temp_file, "{}", written_text).expect("Failed to write to temporary file");
+
+    // Go back to the start of the file before reading.
+    temp_file
+        .seek(SeekFrom::Start(0))
+        .expect("Failed to seek to start of file");
+
+    // Read the text back from the temporary file.
+    let mut buffer = String::new();
+    temp_file
+        .read_to_string(&mut buffer)
+        .expect("Failed to read from temporary file");
+
+    // Print the text that was read.
+    println!("Read from temporary file: {}", buffer);
 
     let proof = prove();
 
@@ -50,11 +75,13 @@ fn prove() -> Vec<u8> {
     };
 
     stdin.write(&tx);
+    println!("before prove");
     let mut proof = SP1Prover::prove(ELF, stdin).expect("proving failed");
 
     // Verify proof.
+    println!("before verify");
     SP1Verifier::verify(ELF, &proof).expect("verification failed");
-
+    println!("after verify");
     // Return proof.
     println!("prover: verified proof");
     serde_json::to_vec(&proof).unwrap()

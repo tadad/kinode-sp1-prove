@@ -15,7 +15,9 @@ hex-literal = "0.4.0"
 kinode_process_lib = { git = "https://github.com/kinode-dao/process_lib.git", tag = "v0.5.9-alpha" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-sp1-core = { git = "https://github.com/succinctlabs/sp1.git", rev = "cbbd455" }
+# sp1-core = { git = "https://github.com/succinctlabs/sp1.git", rev = "cbbd455" }
+sp1-core = { path = "../../../sp1/core" }
+tempfile = "3.10.0"
 wit-bindgen = { git = "https://github.com/bytecodealliance/wit-bindgen", rev = "efcc759" }
 
 [lib]

@@ -1,7 +1,7 @@
 [
     {
-        "process_name": "prove_fib",
-        "process_wasm_path": "/prove_fib.wasm",
+        "process_name": "node",
+        "process_wasm_path": "/node.wasm",
         "on_exit": "None",
         "request_networking": true,
         "request_capabilities": [
