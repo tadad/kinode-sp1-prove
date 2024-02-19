@@ -8,7 +8,7 @@ use kinode_process_lib::{
 };
 use serde::{Deserialize, Serialize};
 
-const ELF: &[u8] = include_bytes!("../../../program/elf/riscv32im-succinct-zkvm-elf");
+const ELF: &[u8] = include_bytes!("../../../execution_engine/elf/riscv32im-succinct-zkvm-elf");
 
 #[derive(Serialize, Deserialize)]
 struct Transaction {
