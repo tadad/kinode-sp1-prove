@@ -1,6 +1,6 @@
 use alloy_core::primitives::{Address, Signature, U256};
 use serde::{Deserialize, Serialize};
-use sp1_core::{utils, SP1Prover, SP1Stdin, SP1Verifier};
+use sp1_core::{SP1Prover, SP1Stdin, SP1Verifier};
 
 #[derive(Serialize, Deserialize)]
 struct Transaction {
@@ -42,14 +42,14 @@ fn main() {
     };
 
     stdin.write(&tx);
-    println!("before prove");
 
     // Generate the proof for the given program.
     let mut proof = SP1Prover::prove(ELF, stdin).expect("proving failed");
-    println!("after prove");
     // Verify proof.
     SP1Verifier::verify(ELF, &proof).expect("verification failed");
-    println!("after verify");
+    let state = proof.stdout.read::<String>();
+    println!("state: {}", state);
+
     // Save the proof.
     proof
         .save("proof-with-pis.json")

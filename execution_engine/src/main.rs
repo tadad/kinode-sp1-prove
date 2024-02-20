@@ -4,8 +4,6 @@ sp1_zkvm::entrypoint!(main);
 use alloy_core::primitives::{Address, Signature, U256};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-// use sha2::{Digest, Sha256};
-// use std::hash::{Hash, Hasher};
 // use ed25519_dalek::*;
 // use hex::decode;
 // use std::hint::black_box;
@@ -17,27 +15,6 @@ struct State {
     accounts: HashMap<Address, HashSet<U256>>, // pub_key to NFTs owned
 }
 
-// TODO need a better way to hash the state
-// impl Hash for State {
-//     fn hash<H: Hasher>(&self, state: &mut H) {
-//         let mut data_vec: Vec<_> = self.data.iter().collect();
-//         data_vec.sort_by(|a, b| a.0.cmp(b.0));
-//         for (key, value) in data_vec {
-//             key.hash(state);
-//             value.hash(state);
-//         }
-
-//         let mut accounts_vec: Vec<_> = self.accounts.iter().collect();
-//         accounts_vec.sort_by(|a, b| a.0.cmp(b.0));
-//         for (key, value_set) in accounts_vec {
-//             key.hash(state);
-//             let mut value_vec: Vec<_> = value_set.iter().collect();
-//             value_vec.sort();
-//             value_vec.hash(state);
-//         }
-//     }
-// }
-
 #[derive(Serialize, Deserialize)]
 struct Transaction {
     from: Address,
@@ -45,6 +22,8 @@ struct Transaction {
     data: TxType,
 }
 
+// TODO I'm handwaving away Deposits/Withdrawals, probably will require massive overhaul of the
+// state here, merkel proofs, etc. not going to bother until we actually hook this up to chain
 #[derive(Serialize, Deserialize)]
 enum TxType {
     Bridge {
@@ -64,9 +43,13 @@ enum TxType {
 }
 
 pub fn main() {
-    let mut state = sp1_zkvm::io::read::<State>();
+    let mut state = State {
+        data: HashMap::new(),
+        accounts: HashMap::new(),
+    };
     let tx = sp1_zkvm::io::read::<Transaction>();
 
+    // TODO This is expensive so skip it for now
     // match verify_sig(tx) {
     //     Ok(_) => sp1_zkvm::io::write(&"ok"),
     //     Err(_) => sp1_zkvm::io::write(&"fail"),
@@ -75,7 +58,6 @@ pub fn main() {
         TxType::Bridge { owner, id } => {
             let nfts = state.accounts.entry(owner).or_insert_with(HashSet::new);
             nfts.insert(id);
-            sp1_zkvm::io::write(&state);
         }
         TxType::Update { id, metadata } => {
             state.data.insert(id, metadata);
@@ -92,8 +74,8 @@ pub fn main() {
         }
     }
 
-    sp1_zkvm::io::write(&state);
-    println!("done");
+    let serialized = serde_json::to_string(&state).unwrap();
+    sp1_zkvm::io::write(&serialized);
 }
 
 // fn verify_sig(tx: Transaction) -> Result<(), ed25519_dalek::SignatureError> {
