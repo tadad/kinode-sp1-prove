@@ -16,14 +16,17 @@ struct State {
 }
 
 #[derive(Serialize, Deserialize)]
+struct Withdrawals {
+    // TODO should be a Merkel (Patricia) tree (trie?)
+}
+
+#[derive(Serialize, Deserialize)]
 struct Transaction {
     from: Address,
     sig: Signature,
     data: TxType,
 }
 
-// TODO I'm handwaving away Deposits/Withdrawals, probably will require massive overhaul of the
-// state here, merkel proofs, etc. not going to bother until we actually hook this up to chain
 #[derive(Serialize, Deserialize)]
 enum TxType {
     Bridge {
@@ -74,6 +77,12 @@ pub fn main() {
         }
     }
 
+    // TODO probably do need to hash the state
+    // then need a separate state which will allow for merkle proof-based withdrawals
+    // That way we don't need to make the entire state a MPT. Just the deposits/withdrawals
+    // Could easily make a library to plug and play: your state just needs to impl Hash (deterministically)
+    // and then just import the deposit/withdraw library to handle ERC20/721/1155/etc
+    // then you state root+d/w state root is posted to chain > BAM
     let serialized = serde_json::to_string(&state).unwrap();
     sp1_zkvm::io::write(&serialized);
 }
