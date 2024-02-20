@@ -5,7 +5,7 @@ name = "execution_engine"
 edition = "2021"
 
 [dependencies]
-alloy-core = { version = "0.6.3", features = ["serde"] }
+alloy-core = { version = "0.6.3", features = ["serde", "k256"] }
 serde = { version = "1.0", features = ["derive"] }
 sp1-zkvm = { git = "https://github.com/succinctlabs/sp1.git" }
 ed25519-dalek = { git = "https://github.com/dalek-cryptography/curve25519-dalek.git", rev = "0b45e00", version = "2.1.0" }

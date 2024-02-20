@@ -1,0 +1,12 @@
+[workspace]
+[package]
+version = "0.1.0"
+name = "script"
+edition = "2021"
+
+[dependencies]
+alloy-core = { version = "0.6.3", features = ["serde", "k256"] }
+hex-literal = "0.4.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sp1-core = { git = "https://github.com/succinctlabs/sp1.git", rev = "cbbd455" }
